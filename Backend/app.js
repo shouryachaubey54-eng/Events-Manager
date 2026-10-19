@@ -7,11 +7,11 @@ app.listen(8080,()=>{
 })
 const cors = require('cors');
 const {MongoStore} = require('connect-mongo');
-// Session middleware configuration
+
 
 app.use(cors({
-    origin: 'http://localhost:5173', // Replace with your frontend's actual URL/port
-    credentials: true                // Crucial for allowing session cookies
+    origin: 'http://localhost:5173', 
+    credentials: true                
 }));
 app.use(express.text());
 app.use(express.json())
@@ -30,11 +30,11 @@ let Core=require("./CoreModel.js");
 let Events=require("./eventModel.js");
 let {loginmiddleware}=require("./middleware.js");
 let {editmiddleware}=require("./middleware.js");
-// getting-started.js
+
 const session = require('express-session');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
-// 1. Body parser middleware (so req.body is populated)
+
 app.use(express.urlencoded({ extended: true }));
 app.use(
   session({
@@ -43,51 +43,51 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
-      collectionName: 'sessions', // Name of the collection in Atlas where sessions will be saved
+      collectionName: 'sessions',
     }),
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 day (adjust as needed)
-      secure: process.env.NODE_ENV === 'production', // true if using HTTPS in production
+      maxAge: 1000 * 60 * 60 * 24, 
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
     }
   })
 );
 app.use(passport.initialize());
-app.use(passport.session());//this works because of express-session.
-const LocalStrategy = require('passport-local').Strategy;//local-strategy to chack authenticate user
-//passport.use(new)
-passport.use(//method to authenticate user 
+app.use(passport.session());
+const LocalStrategy = require('passport-local').Strategy;
+
+passport.use(
   'four-field-login',
   new LocalStrategy(
     {
-      // Map Passport's internal standard fields to your form's fields
+     
       usernameField: 'email',
       passwordField: 'password',
-      passReqToCallback: true, // Crucial: exposes req.body to the verify function
+      passReqToCallback: true, 
     },
     async (req, email, password, done) => {
       try {
         const { admissionNumber, club } = req.body;
 
-        // 1. Single database query matching all multi-attribute identifiers
+      
         const user = await Core.findOne({
           AdmissionNumber: admissionNumber,
           email: email,
           club: club,
         });
 
-        // 2. If no user matches all three credentials, return generic error
+    
         if (!user) {
           return done(null, false, { message: 'Invalid credentials provided.' });
         }
 
-        // 3. Verify the password hash
+      
         const isMatch = (password===user.password);
         if (!isMatch) {
           return done(null, false, { message: 'Invalid credentials provided.' });
         }
 
-        // 4. Return user on success
+       
         return done(null, user);
       } catch (err) {
         return done(err);
@@ -95,38 +95,38 @@ passport.use(//method to authenticate user
     }
   )
 );
-passport.use(//method to authenticate user 
+passport.use(
   'four-field-login-exe',
   new LocalStrategy(
     {
-      // Map Passport's internal standard fields to your form's fields
+    
       usernameField: 'email',
       passwordField: 'password',
-      passReqToCallback: true, // Crucial: exposes req.body to the verify function
+      passReqToCallback: true,
     },
     async (req, email, password, done) => {
       try {
         const { admissionNumber, club } = req.body;
 
-        // 1. Single database query matching all multi-attribute identifiers
+        
         const user = await Executives.findOne({
           AdmissionNumber: admissionNumber,
           email: email,
           club: club,
         });
 
-        // 2. If no user matches all three credentials, return generic error
+      
         if (!user) {
           return done(null, false, { message: 'Invalid credentials provided.' });
         }
 
-        // 3. Verify the password hash
+     
         const isMatch = (password===user.password);
         if (!isMatch) {
           return done(null, false, { message: 'Invalid credentials provided.' });
         }
 
-        // 4. Return user on success
+   
         return done(null, user);
       } catch (err) {
         return done(err);
@@ -134,10 +134,10 @@ passport.use(//method to authenticate user
     }
   )
 );
-passport.serializeUser((user, done) => {//after authentication this is used to store users info as ID in the session
+passport.serializeUser((user, done) => {
   done(null, user._id);
 });
-passport.deserializeUser(async (id, done) => {//this is used to get back users data from id req.user is used from this method
+passport.deserializeUser(async (id, done) => {
   try {
     const user = await Core.findById(id);
     const userexe=await Executives.findById(id);
@@ -148,14 +148,14 @@ passport.deserializeUser(async (id, done) => {//this is used to get back users d
   }
 });
 
-// let General=require("./generalModel.js");
+
 app.post('/new/login/core', (req, res, next) => {
   passport.authenticate('four-field-login', (err, user, info) => {
     if (err) return next(err);
     if (!user) return res.status(401).json({ error: info.message });
 
-    // Log the user in and establish session
-    req.logIn(user, (err) => {//this triuggers serializeUser and saves users info as Id
+   
+    req.logIn(user, (err) => {
       if (err) return next(err);
       res.json({"status":"true"});
     });
@@ -166,8 +166,8 @@ app.post('/new/login/executive', (req, res, next) => {
     if (err) return next(err);
     if (!user) return res.status(401).json({ error: info.message });
 
-    // Log the user in and establish session
-    req.logIn(user, (err) => {//this triuggers serializeUser and saves users info as Id
+   
+    req.logIn(user, (err) => {
       if (err) return next(err);
       res.json({"status":"true"});
     });

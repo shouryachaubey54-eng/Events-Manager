@@ -6,7 +6,7 @@ export default function Box({ prop,date,eventfunc,User}) {
     let [editing,setediting]=useState(false);
     let [Id,setId]=useState("");
     let [clashingEvents,setclashingevents]=useState([]);
-    function func(prop){//Normal function which returns updated dates with tt:tt
+    function func(prop){
             return prop.map((event)=>{
                 let s=event.startTime;
                 let e=event.endTime;
