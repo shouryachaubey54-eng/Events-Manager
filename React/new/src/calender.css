@@ -1,0 +1,13 @@
+@media (min-width: 900px) {
+  .box {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Calendar takes 2/3, Form/Details take 1/3 */
+    grid-template-areas: 
+      "calendar details"
+      "calendar form";
+  }
+
+  .box2 { grid-area: calendar; }
+  .box1 { grid-area: details; }
+  .calendar-form { grid-area: form; }
+}
