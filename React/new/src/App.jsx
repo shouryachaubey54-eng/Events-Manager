@@ -8,7 +8,6 @@ function App() {
   }
   return (
     <>
-    {/* <button onClick={func}>Click</button> */}
     <Calender/>
     </>
   )

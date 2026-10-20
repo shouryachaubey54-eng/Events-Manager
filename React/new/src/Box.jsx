@@ -1,183 +1,185 @@
-import { useState,useEffect} from "react";
+import { useState, useEffect } from "react";
 import "./box.css";
 
-export default function Box({ prop,date,eventfunc,User}) {
-    let [events,setEvents]=useState([]);
-    let [editing,setediting]=useState(false);
-    let [Id,setId]=useState("");
-    let [clashingEvents,setclashingevents]=useState([]);
-    function func(prop){
-            return prop.map((event)=>{
-                let s=event.startTime;
-                let e=event.endTime;
-                let totalMinutes = 540;
-                let hours1 = Math.floor(s / 60);
-                let minutes1= s % 60;
-                let formattedTime = `${String(hours1).padStart(2, '0')}:${String(minutes1).padStart(2, '0')}`;
-                let hours2 = Math.floor(e / 60);
-                let minutes2 = e % 60;
-                let formattedTime2 = `${String(hours2).padStart(2, '0')}:${String(minutes2).padStart(2, '0')}`;
-                return {...event,startTime:formattedTime,endTime:formattedTime2};
-                })
-    }
-    async function EventConflictfunc(){
-        console.log(date);
-             const response = await fetch('/new/events', {
-              credentials: 'include',
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'text/plain',
-              },
-              body: date.date,
-          });//data for a date
-          let result=await response.json();
-          const clashEvents = [];
-            for(let i=0;i<result.length;i++){
-                for(let j=0;j<result.length;j++){
-                    if(i==j)continue;
-                    if(result[i].date==result[j].date && result[i].startTime<result[j].endTime && result[i].endTime>result[j].startTime){
-                        if(clashEvents.find((u)=>(u[0]==result[i].title && u[1]==result[j].title) || (u[0]==result[j].title && u[1]==result[i].title))){
-                            continue;
-                        }else{
-                            clashEvents.push([result[i].title,result[j].title]);
-                        }
-                    }
-                }
-            }
-            setclashingevents(clashEvents);
-        }
+export default function Box({ prop, date, eventfunc, User }) {
+    let [events, setEvents] = useState([]);
+    let [editing, setEditing] = useState(false);
+    let [editId, setEditId] = useState("");
+    let [clashingEvents, setClashingEvents] = useState([]);
     
-    useEffect(()=>{
-        async function funcn(){
-             const response = await fetch('/new/events', {
-              credentials: 'include',
-              method: 'POST',
-              headers: {
-                  'Content-Type': 'text/plain',
-              },
-              body: date.date,
-          });//data for a date
-          let result=await response.json();
-          const clashEvents = [];
-            for(let i=0;i<result.length;i++){
-                for(let j=0;j<result.length;j++){
-                    if(i==j)continue;
-                    if(result[i].date==result[j].date && result[i].startTime<result[j].endTime && result[i].endTime>result[j].startTime){
-                        if(clashEvents.find((u)=>(u[0]==result[i].title && u[1]==result[j].title) || (u[0]==result[j].title && u[1]==result[i].title))){
+    let [editData, setEditData] = useState({ title: "", startTime: "", endTime: "" });
+    let [inputData, setInputData] = useState({ title: "", startTime: "", endTime: "" });
+
+    // Format event start and end minutes into HH:MM string format
+    function formatEventTimes(eventsList) {
+        return eventsList.map((event) => {
+            let s = event.startTime;
+            let e = event.endTime;
+            let hours1 = Math.floor(s / 60);
+            let minutes1 = s % 60;
+            let formattedTime = `${String(hours1).padStart(2, '0')}:${String(minutes1).padStart(2, '0')}`;
+            
+            let hours2 = Math.floor(e / 60);
+            let minutes2 = e % 60;
+            let formattedTime2 = `${String(hours2).padStart(2, '0')}:${String(minutes2).padStart(2, '0')}`;
+            
+            return { ...event, startTime: formattedTime, endTime: formattedTime2 };
+        });
+    }
+
+    // Fetch day events and compute conflicts
+    async function fetchAndUpdateConflicts() {
+        try {
+            const response = await fetch('/new/events', {
+                credentials: 'include',
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: date.date,
+            });
+            let result = await response.json();
+            
+            const clashEvents = [];
+            for (let i = 0; i < result.length; i++) {
+                for (let j = 0; j < result.length; j++) {
+                    if (i === j) continue;
+                    if (result[i].date === result[j].date && result[i].startTime < result[j].endTime && result[i].endTime > result[j].startTime) {
+                        if (clashEvents.find((u) => (u[0] === result[i].title && u[1] === result[j].title) || (u[0] === result[j].title && u[1] === result[i].title))) {
                             continue;
-                        }else{
-                            clashEvents.push([result[i].title,result[j].title]);
+                        } else {
+                            clashEvents.push([result[i].title, result[j].title]);
                         }
                     }
                 }
             }
-            setEvents(func(prop));
-            setclashingevents(clashEvents);
+            setClashingEvents(clashEvents);
+            return result;
+        } catch (err) {
+            console.error("Error fetching event conflicts:", err);
+            return [];
         }
-        funcn();
-    },[prop,date]);
+    }
 
-    let [editData,setEdit]=useState({title:"",startTime:"",endTime:""});
-    let [inputData,setInput]=useState({title:"",startTime:"",endTime:""});
-    //useEvent to detect weather any event is overlapping or not
-    function func1(event){
-        let inputName=event.target.name;
-        let value=event.target.value;
-        setInput((oldInput)=>{
-            return {...oldInput,[inputName]:value};
-        })
+    useEffect(() => {
+        async function initBox() {
+            const result = await fetchAndUpdateConflicts();
+            setEvents(formatEventTimes(prop || []));
+        }
+        initBox();
+    }, [prop, date]);
+
+    // Handle new event form inputs
+    function handleInputChange(event) {
+        let { name, value } = event.target;
+        setInputData((oldInput) => ({ ...oldInput, [name]: value }));
     } 
-    async function func2(event){
+
+    // Add new event handler
+    async function handleAddEvent(event) {
         event.preventDefault();
-        //give data to server and wait to be added;
-        let response=await fetch(`/new/add/${date.date}`,{
+        let response = await fetch(`/new/add/${date.date}`, {
             credentials: 'include',
-            method:"POST",
-            headers: {
-                    'Content-Type': 'application/json',
-            },
-            body:JSON.stringify(inputData),
-        }) 
-        let res=await response.json();
-        setEvents(func(res));
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(inputData),
+        }); 
+        let res = await response.json();
+        setEvents(formatEventTimes(res));
         eventfunc();
-        EventConflictfunc();
-        setInput({title:"",startTime:"",endTime:""});
-    };
-    function func3(a,b,c,id){
-        setediting(true);
-        setEdit({title:a,startTime:b,endTime:c});
-        setId(id);
+        fetchAndUpdateConflicts();
+        setInputData({ title: "", startTime: "", endTime: "" });
     }
-    function func4(event){
-        let inputName=event.target.name;
-        let value=event.target.value;
-        setEdit((oldVal)=>{
-            return {...oldVal,[inputName]:value};
-        })
+
+    // Trigger edit mode for an event
+    function handleEditClick(title, startTime, endTime, id) {
+        setEditing(true);
+        setEditData({ title, startTime, endTime });
+        setEditId(id);
     }
-    async function func5(event){
-        //Use the server and update the data there
-        //id date title startDate endDate, use these and update the data
+
+    // Handle edit form inputs
+    function handleEditInputChange(event) {
+        let { name, value } = event.target;
+        setEditData((oldVal) => ({ ...oldVal, [name]: value }));
+    }
+
+    // Submit updated event handler
+    async function handleUpdateEvent(event) {
         event.preventDefault();
-        let response=await fetch(`/new/edit/${Id}`,{
+        let response = await fetch(`/new/edit/${editId}`, {
             credentials: 'include',
-            method:"POST",
-            headers:{
-                'Content-Type':'application/json'
-            },
-            body:JSON.stringify(editData),
-        })
-        let res=await response.json();
-        setEvents(func(res));
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(editData),
+        });
+        let res = await response.json();
+        setEvents(formatEventTimes(res));
         eventfunc();
-        EventConflictfunc();
-        setEdit("");
-        setId("");
+        fetchAndUpdateConflicts();
+        setEditing(false);
+        setEditData({ title: "", startTime: "", endTime: "" });
+        setEditId("");
     }
+
     return (
         <div className="box-container">
-            <h3 className="box-title">Events List</h3>
-            <div className="events-list">
-                {events.map((a, index) => (
-                    <div className="event-item" key={index}>
-                        {editing && a._id==Id?
-                        <form onSubmit={func5}>
-                            <input type="text" value={editData.title} onChange={func4} name="title"/>
-                            <input type="time" value={editData.startTime} onChange={func4} name="startTime"/>
-                            <input type="time" value={editData.endTime} onChange={func4} name="endTime"/>
-                            <button>Submit</button>
-                        </form>:
-                        <div className="event-info">
-                            <span className="event-name">{a.title}</span>
-                            <span className="event-time">{a.startTime}</span>
-                            <span className="event-time">{a.endTime}</span>
-                            {User && User.core && User.club==a.club?
-                            <button className="edit-btn" onClick={()=>func3(a.title,a.startTime ,a.endTime,a._id)}>Edit</button>:""}
-                        </div>
-                        }
-                    </div>//called a function onClick which made all the variables for edit
-                ))}
-            </div>
-            <div>
-                {User?
+            <h3 className="box-title">Events for {date.date}</h3>
             
-                    clashingEvents.map((a,id)=>{
-                        return (
-                            <p key={id}>{a[0]} is Conflicting with {a[1]}</p>
-                        )
-                    })
-                :""}
+            {/* Events List */}
+            <div className="events-list">
+                {events.length === 0 ? (
+                    <p className="no-events">No events scheduled for this date.</p>
+                ) : (
+                    events.map((a, index) => (
+                        <div className="event-item" key={index}>
+                            {editing && a._id === editId ? (
+                                <form onSubmit={handleUpdateEvent} className="edit-event-form">
+                                    <input type="text" value={editData.title} onChange={handleEditInputChange} name="title" required />
+                                    <input type="time" value={editData.startTime} onChange={handleEditInputChange} name="startTime" required />
+                                    <input type="time" value={editData.endTime} onChange={handleEditInputChange} name="endTime" required />
+                                    <button type="submit" className="save-btn">Save</button>
+                                </form>
+                            ) : (
+                                <div className="event-info">
+                                    <div className="event-details">
+                                        <span className="event-name"><strong>{a.title}</strong></span>
+                                        <span className="event-time">🕒 {a.startTime} - {a.endTime}</span>
+                                    </div>
+                                    {User && User.core && User.club === a.club && (
+                                        <button className="edit-btn" onClick={() => handleEditClick(a.title, a.startTime, a.endTime, a._id)}>
+                                            Edit
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    ))
+                )}
             </div>
-            {/* Input form */}
-            {User?
-            <form className="event-form" onSubmit={func2}>
-                <input type="text" placeholder="Enter the Title" onChange={func1} name="title" value={inputData.title}/>
-                <input type="time" onChange={func1} name="startTime" value={inputData.startTime}/>
-                <input type="time" onChange={func1} name="endTime" value={inputData.endTime}/>
-                <button type="submit" className="submit-btn">Click</button>
-            </form>:""
-            }
+
+            {/* Conflict Warnings Section */}
+            {User && clashingEvents.length > 0 && (
+                <div className="conflict-container">
+                    <h4>⚠️ Schedule Conflicts</h4>
+                    {clashingEvents.map((a, id) => (
+                        <p key={id} className="conflict-alert">
+                            <strong>{a[0]}</strong> conflicts with <strong>{a[1]}</strong>
+                        </p>
+                    ))}
+                </div>
+            )}
+
+            {/* Input Form for New Events */}
+            {User && (
+                <form className="event-form" onSubmit={handleAddEvent}>
+                    <h4>Add New Event</h4>
+                    <input type="text" placeholder="Enter Event Title" onChange={handleInputChange} name="title" value={inputData.title} required />
+                    <div className="time-inputs">
+                        <input type="time" onChange={handleInputChange} name="startTime" value={inputData.startTime} required />
+                        <input type="time" onChange={handleInputChange} name="endTime" value={inputData.endTime} required />
+                    </div>
+                    <button type="submit" className="submit-btn">Add Event</button>
+                </form>
+            )}
         </div>
     );
 }
