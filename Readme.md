@@ -336,14 +336,3 @@ All routes are prefixed with `/new`.
 | `GET` | `/new/history/:club` | Public | Bill history for a club |
 | `GET` | `/new/reduce/:amount/:club` | Public | Subtract an amount from the club's remaining budget |
 | `GET` | `/new/verify/:id` | Public | Mark a bill as verified |
-
-## Troubleshooting
-
-| Problem | Likely cause and fix |
-| --- | --- |
-| Login or calendar requests return 404 or HTML | The Vite proxy is missing. Add the `proxy` block from Step 7 and restart `npm run dev`. |
-| `Database connection error` on startup | Check `MONGO_URI`: correct username and password, your IP is allowed under **Network Access**, and special characters in the password are URL-encoded. |
-| CORS error in the browser console | The frontend must run on `http://localhost:5173`. |
-| Bill upload fails | Check that `cloud_Name`, `api_Key`, and `api_Secret` match your Cloudinary dashboard exactly, including capitalisation. Only `jpg`, `png`, and `jpeg` are intended. |
-| "Invalid credentials provided" | All four fields must match a document in the right collection. Core accounts are in `coremembers`, executives in `executives`, and the club name is case-sensitive. |
-| Stays logged out after refresh | Make sure you are on `http://localhost:5173` (not `127.0.0.1`) and that `NODE_ENV` is not set to `production` while testing over plain HTTP. |
