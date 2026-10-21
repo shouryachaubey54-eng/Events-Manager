@@ -1,13 +1,17 @@
-const mongoose = require('mongoose');
-let express=require("express");
 require('dotenv').config();
+const mongoose = require('mongoose');
+const multer=require('multer');
+const {storage}=require("./cloudinaryconfig.js");
+const upload=multer({storage});
+let express=require("express");
 let app=express();
 app.listen(8080,()=>{
     console.log("listening");
 })
 const cors = require('cors');
 const {MongoStore} = require('connect-mongo');
-
+let History=require("./HistoryModel.js");
+let Club=require("./ClubModel.js");
 
 app.use(cors({
     origin: 'http://localhost:5173', 
@@ -253,3 +257,35 @@ app.post('/new/logout', (req, res, next) => {
     });
   });
 });
+app.post("/new/bill",upload.single('slip'),(req,res)=>{
+  res.json(req.file);
+})
+app.post("/new/bill/submit",async (req,res)=>{
+  //req.body,History,Club
+  let data=req.body;
+  let history=new History(data);
+  await history.save();
+  res.json({"saved":"true"});
+
+})
+app.get("/new/club/:club",async (req,res)=>{
+  let {club}=req.params;
+  let response=await Club.find({clubName:club});
+  res.json(response);
+})
+app.get("/new/history/:club",async (req,res)=>{
+  let {club}=req.params;
+  let response=await History.find({clubName:club});
+  res.json(response);
+})
+app.get("/new/reduce/:amount/:club",async (req,res)=>{
+  let {club,amount}=req.params;
+  let numericAmount = Number(amount);
+  let response=await Club.findOneAndUpdate({ clubName: club },{ $inc: { leftAmount:-numericAmount }});
+  res.json({"done":"true"});
+})
+app.get("/new/verify/:id",async (req,res)=>{
+  let {id}=req.params;
+  await History.findByIdAndUpdate(id,{verified:true});
+  res.json({"done":"true"});
+})

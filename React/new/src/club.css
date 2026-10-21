@@ -1,0 +1,250 @@
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f6f9;
+  margin: 0;
+  padding: 0;
+}
+
+.club-container {
+  max-width: 900px;
+  margin: 30px auto;
+  padding: 20px;
+}
+
+/* Summary Card Styles */
+.club-summary-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+}
+
+.club-summary-card h2 {
+  margin-top: 0;
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.summary-stats {
+  display: flex;
+  gap: 20px;
+}
+
+.stat-box {
+  flex: 1;
+  background: #f8f9fa;
+  padding: 15px 20px;
+  border-radius: 8px;
+  border-left: 4px solid #3498db;
+}
+
+.stat-box span {
+  font-size: 13px;
+  color: #7f8c8d;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.stat-box h3 {
+  margin: 8px 0 0 0;
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.stat-box h3.left-amount {
+  color: #27ae60;
+}
+
+/* Form Card Styles */
+.form-card {
+  background: #ffffff;
+  padding: 24px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  margin-bottom: 25px;
+}
+
+.form-card h3 {
+  margin-top: 0;
+  color: #2c3e50;
+  margin-bottom: 15px;
+}
+
+.bill-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.file-input-wrapper input[type="file"] {
+  display: none;
+}
+
+.custom-file-btn {
+  display: inline-block;
+  background: #ecf0f1;
+  color: #34495e;
+  padding: 12px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  text-align: center;
+  transition: background 0.2s;
+  border: 1px dashed #bdc3c7;
+}
+
+.custom-file-btn:hover {
+  background: #dfe6e9;
+}
+
+.input-group input {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1px solid #dcdde1;
+  border-radius: 6px;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.input-group input:focus {
+  border-color: #3498db;
+}
+
+.submit-btn {
+  background: #3498db;
+  color: white;
+  border: none;
+  padding: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit-btn:hover {
+  background: #2980b9;
+}
+
+/* Core Action Styles */
+.core-action-container {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.verify-bills-btn {
+  background: #9b59b6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.verify-bills-btn:hover {
+  background: #8e44ad;
+}
+
+/* History Section Grid */
+.history-section h3 {
+  color: #2c3e50;
+  border-bottom: 2px solid #ecf0f1;
+  padding-bottom: 8px;
+  margin-bottom: 20px;
+}
+
+.history-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.history-card {
+  background: #ffffff;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.image-container {
+  width: 100%;
+  height: 160px;
+  background: #ecf0f1;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.history-details {
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.uploaded-by {
+  margin: 0;
+  font-size: 13px;
+  color: #7f8c8d;
+}
+
+.bill-amount {
+  margin: 0;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.badge {
+  font-size: 12px;
+  font-weight: 600;
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+
+.badge.verified {
+  background: #e8f8f5;
+  color: #27ae60;
+  border: 1px solid #27ae60;
+}
+
+.badge.pending {
+  background: #fef9e7;
+  color: #f39c12;
+  border: 1px solid #f39c12;
+}
+
+.verify-btn {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.verify-btn:hover {
+  background: #219653;
+}
