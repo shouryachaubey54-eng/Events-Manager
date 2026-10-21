@@ -347,14 +347,3 @@ All routes are prefixed with `/new`.
 | Bill upload fails | Check that `cloud_Name`, `api_Key`, and `api_Secret` match your Cloudinary dashboard exactly, including capitalisation. Only `jpg`, `png`, and `jpeg` are intended. |
 | "Invalid credentials provided" | All four fields must match a document in the right collection. Core accounts are in `coremembers`, executives in `executives`, and the club name is case-sensitive. |
 | Stays logged out after refresh | Make sure you are on `http://localhost:5173` (not `127.0.0.1`) and that `NODE_ENV` is not set to `production` while testing over plain HTTP. |
-
-## Known Limitations & Roadmap
-
-This is a working prototype. Before deploying it publicly, these are the main things to improve:
-
-- [ ] **Hash passwords.** Passwords are currently stored and compared as plain text. `bcrypt` is installed but not yet used.
-- [ ] **Protect the expense routes.** `/new/bill`, `/new/bill/submit`, `/new/reduce`, and `/new/verify` should require login, with verification and budget changes restricted to core members of the same club.
-- [ ] **Account management.** Add a way for core members to create executive accounts instead of inserting them manually in the database.
-- [ ] **Audience-aware conflicts.** Only flag a clash when the events also target the same audience, instead of any time overlap.
-- [ ] **Configurable ports and origins.** Move the port and CORS origin into environment variables for deployment.
-- [ ] **Verify and deduct atomically.** Combine the budget deduction and verification into a single request so the two can't get out of sync.
