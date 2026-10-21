@@ -261,7 +261,7 @@ app.post("/new/bill",upload.single('slip'),(req,res)=>{
   res.json(req.file);
 })
 app.post("/new/bill/submit",async (req,res)=>{
-  //req.body,History,Club
+  //body,History,Club
   let data=req.body;
   let history=new History(data);
   await history.save();
