@@ -10,7 +10,7 @@ export default function Box({ prop, date, eventfunc, User }) {
     let [editData, setEditData] = useState({ title: "", startTime: "", endTime: "" });
     let [inputData, setInputData] = useState({ title: "", startTime: "", endTime: "" });
 
-    // Format event start and end minutes into HH:MM string format
+
     function formatEventTimes(eventsList) {
         return eventsList.map((event) => {
             let s = event.startTime;
