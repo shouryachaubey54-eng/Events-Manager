@@ -22,8 +22,6 @@ A full-stack MERN application that gives a club's team **one shared event calend
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [API Reference](#api-reference)
-- [Troubleshooting](#troubleshooting)
-- [Known Limitations & Roadmap](#known-limitations--roadmap)
 
 ---
 
